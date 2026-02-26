@@ -583,71 +583,6 @@
             font-weight: 600;
         }
 
-        /* API key setup */
-        .api-setup {
-            padding: 20px 24px;
-            background: #fef9e7;
-            border-top: 1px solid rgba(0,0,0,.04);
-        }
-
-        .api-setup-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #92400e;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .api-setup-text {
-            font-size: 12px;
-            color: #a16207;
-            line-height: 1.5;
-            margin-bottom: 10px;
-        }
-
-        .api-setup-text a {
-            color: var(--primary);
-            text-decoration: underline;
-        }
-
-        .api-key-row {
-            display: flex;
-            gap: 8px;
-        }
-
-        .api-key-input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1.5px solid #e5c07b;
-            border-radius: var(--radius-xs);
-            background: #fff;
-            font-family: 'Inter', monospace;
-            font-size: 13px;
-            color: var(--text);
-            outline: none;
-            transition: border-color var(--transition);
-        }
-
-        .api-key-input:focus {
-            border-color: var(--primary);
-        }
-
-        .api-key-save {
-            padding: 8px 16px;
-            border-radius: var(--radius-xs);
-            border: none;
-            background: var(--primary);
-            color: #fff;
-            font-family: inherit;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition);
-        }
-
-        .api-key-save:hover { background: var(--primary-dark); }
 
         /* Loading spinner in search */
         .search-spinner {
@@ -801,21 +736,6 @@
                 <p>Введите ФИО в поле выше и нажмите «Найти». Поиск осуществляется по описаниям мероприятий.</p>
             </div>
         </div>
-        <div class="api-setup" id="apiSetup" style="display:none">
-            <div class="api-setup-title">
-                <span class="material-icons-round" style="font-size:16px">vpn_key</span>
-                Настройка Google Calendar API
-            </div>
-            <p class="api-setup-text">
-                Для работы поиска необходим ключ Google Calendar API.
-                <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Получить ключ</a>
-                (включите Calendar API в проекте).
-            </p>
-            <div class="api-key-row">
-                <input type="text" class="api-key-input" id="apiKeyInput" placeholder="Вставьте API ключ...">
-                <button class="api-key-save" onclick="saveApiKey()">Сохранить</button>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -827,7 +747,6 @@
 <script>
 /* ═══ CONFIGURATION ═══ */
 const CALENDAR_ID = 'ce870856b6537aae62a6ccb685a5cef29039c721e18ba1a211b8af808a7ffc84@group.calendar.google.com';
-const GOOGLE_API_KEY = ''; // Вставьте свой Google Calendar API ключ здесь (или введите через интерфейс)
 
 /* ═══ ELEMENTS ═══ */
 const cf = document.getElementById('cf');
@@ -861,100 +780,130 @@ function fs() {
 function st(t) { document.getElementById('st').textContent = t; }
 
 /* ═══ LOGO TRANSPARENCY ═══ */
-(function makeLogoTransparent() {
+(function() {
     const img = document.getElementById('logoImg');
+    let done = false;
     function process() {
-        const c = document.createElement('canvas');
-        const ctx = c.getContext('2d');
-        c.width = img.naturalWidth;
-        c.height = img.naturalHeight;
-        ctx.drawImage(img, 0, 0);
-        const id = ctx.getImageData(0, 0, c.width, c.height);
-        const d = id.data;
-        const threshold = 45;
-        for (let i = 0; i < d.length; i += 4) {
-            const r = d[i], g = d[i+1], b = d[i+2];
-            if (r < threshold && g < threshold && b < threshold) {
-                d[i+3] = 0;
-            } else if (r < threshold * 1.5 && g < threshold * 1.5 && b < threshold * 1.5) {
-                const maxC = Math.max(r, g, b);
-                d[i+3] = Math.min(255, Math.round(maxC * (255 / (threshold * 1.5))));
+        if (done) return;
+        done = true;
+        try {
+            const c = document.createElement('canvas');
+            const ctx = c.getContext('2d');
+            c.width = img.naturalWidth;
+            c.height = img.naturalHeight;
+            if (!c.width || !c.height) return;
+            ctx.drawImage(img, 0, 0);
+            const id = ctx.getImageData(0, 0, c.width, c.height);
+            const d = id.data;
+            for (let i = 0; i < d.length; i += 4) {
+                const br = (d[i] + d[i+1] + d[i+2]) / 3;
+                if (br < 50) d[i+3] = 0;
+                else if (br < 100) d[i+3] = Math.round((br - 50) / 50 * 255);
             }
-        }
-        ctx.putImageData(id, 0, 0);
-        img.src = c.toDataURL('image/png');
+            ctx.putImageData(id, 0, 0);
+            img.src = c.toDataURL('image/png');
+        } catch(e) {}
     }
     if (img.complete && img.naturalWidth > 0) process();
-    else img.addEventListener('load', process);
+    else img.addEventListener('load', process, { once: true });
 })();
 
 /* ═══ SEARCH ═══ */
-function getApiKey() {
-    return GOOGLE_API_KEY || localStorage.getItem('calendar_api_key') || '';
+const ICS_URL = 'https://calendar.google.com/calendar/ical/' +
+    encodeURIComponent(CALENDAR_ID) + '/public/basic.ics';
+const CORS_PROXIES = [
+    function(u) { return 'https://corsproxy.io/?' + encodeURIComponent(u); },
+    function(u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); }
+];
+let cachedEvents = null;
+
+function parseICS(text) {
+    const events = [];
+    const blocks = text.split('BEGIN:VEVENT');
+    for (let i = 1; i < blocks.length; i++) {
+        const block = blocks[i].split('END:VEVENT')[0];
+        const unfolded = block.replace(/\r?\n[ \t]/g, '');
+        const lines = unfolded.split(/\r?\n/);
+        const ev = {};
+        for (const line of lines) {
+            const ci = line.indexOf(':');
+            if (ci === -1) continue;
+            let key = line.substring(0, ci);
+            let val = line.substring(ci + 1);
+            const si = key.indexOf(';');
+            if (si !== -1) key = key.substring(0, si);
+            val = val.replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\\\/g, '\\');
+            switch(key) {
+                case 'SUMMARY': ev.summary = val; break;
+                case 'DESCRIPTION': ev.description = val; break;
+                case 'DTSTART': ev.start = val; break;
+                case 'DTEND': ev.end = val; break;
+                case 'LOCATION': ev.location = val; break;
+            }
+        }
+        if (ev.summary || ev.description) events.push(ev);
+    }
+    return events;
+}
+
+function parseICSDate(s) {
+    if (!s) return null;
+    const c = s.replace('Z', '');
+    if (c.length === 8) return new Date(+c.substring(0,4), +c.substring(4,6)-1, +c.substring(6,8));
+    if (c.length >= 15) return new Date(+c.substring(0,4), +c.substring(4,6)-1, +c.substring(6,8), +c.substring(9,11), +c.substring(11,13), +c.substring(13,15));
+    return new Date(s);
+}
+
+async function fetchCalendarData() {
+    if (cachedEvents) return cachedEvents;
+    for (const proxy of CORS_PROXIES) {
+        try {
+            const resp = await fetch(proxy(ICS_URL));
+            if (resp.ok) {
+                const text = await resp.text();
+                if (text.includes('BEGIN:VCALENDAR')) {
+                    cachedEvents = parseICS(text);
+                    return cachedEvents;
+                }
+            }
+        } catch(e) { continue; }
+    }
+    throw new Error('Не удалось загрузить данные календаря. Проверьте подключение к интернету.');
 }
 
 function openSearch() {
-    const overlay = document.getElementById('searchOverlay');
-    overlay.classList.add('open');
-    const key = getApiKey();
-    document.getElementById('apiSetup').style.display = key ? 'none' : 'block';
-    setTimeout(() => document.getElementById('searchInput').focus(), 300);
+    document.getElementById('searchOverlay').classList.add('open');
+    setTimeout(function() { document.getElementById('searchInput').focus(); }, 300);
 }
 
 function closeSearch() {
     document.getElementById('searchOverlay').classList.remove('open');
 }
 
-function saveApiKey() {
-    const key = document.getElementById('apiKeyInput').value.trim();
-    if (key) {
-        localStorage.setItem('calendar_api_key', key);
-        document.getElementById('apiSetup').style.display = 'none';
-        document.getElementById('searchInput').focus();
-    }
-}
-
 async function searchEvents() {
     const query = document.getElementById('searchInput').value.trim();
     if (!query) return;
-
-    const apiKey = getApiKey();
-    if (!apiKey) {
-        document.getElementById('apiSetup').style.display = 'block';
-        return;
-    }
 
     const results = document.getElementById('searchResults');
     results.innerHTML = '<div class="search-spinner"></div>';
     document.getElementById('searchBtn').disabled = true;
 
     try {
-        const now = new Date();
-        const timeMin = new Date(now.getFullYear() - 1, 0, 1).toISOString();
-        const timeMax = new Date(now.getFullYear() + 1, 11, 31).toISOString();
-
-        const url = 'https://www.googleapis.com/calendar/v3/calendars/' +
-            encodeURIComponent(CALENDAR_ID) + '/events?' +
-            'key=' + encodeURIComponent(apiKey) +
-            '&timeMin=' + encodeURIComponent(timeMin) +
-            '&timeMax=' + encodeURIComponent(timeMax) +
-            '&singleEvents=true&orderBy=startTime&maxResults=2500';
-
-        const resp = await fetch(url);
-        if (!resp.ok) {
-            const err = await resp.json().catch(() => ({}));
-            throw new Error(err.error?.message || 'Ошибка API (' + resp.status + ')');
-        }
-
-        const data = await resp.json();
-        const events = (data.items || []).filter(e => {
+        const events = await fetchCalendarData();
+        const q = query.toLowerCase();
+        const matched = events.filter(function(e) {
             const desc = (e.description || '').toLowerCase();
             const title = (e.summary || '').toLowerCase();
-            const q = query.toLowerCase();
             return desc.includes(q) || title.includes(q);
         });
 
-        if (events.length === 0) {
+        matched.sort(function(a, b) {
+            const da = parseICSDate(a.start) || new Date(0);
+            const db = parseICSDate(b.start) || new Date(0);
+            return db - da;
+        });
+
+        if (matched.length === 0) {
             results.innerHTML =
                 '<div class="search-state">' +
                     '<div class="search-state-icon"><span class="material-icons-round">search_off</span></div>' +
@@ -962,11 +911,9 @@ async function searchEvents() {
                     '<p>По запросу «' + escHtml(query) + '» мероприятия не найдены. Проверьте правильность написания ФИО.</p>' +
                 '</div>';
         } else {
-            let html = '<div class="results-count">Найдено: ' + events.length + ' ' + pluralize(events.length) + '</div>';
-            events.forEach((e, i) => {
-                const start = e.start?.dateTime || e.start?.date || '';
-                const end = e.end?.dateTime || e.end?.date || '';
-                const dateStr = formatEventDate(start, end);
+            let html = '<div class="results-count">Найдено: ' + matched.length + ' ' + pluralize(matched.length) + '</div>';
+            matched.forEach(function(e, i) {
+                const dateStr = formatEventDate(e.start, e.end);
                 const loc = e.location || '';
                 const desc = e.description || '';
                 const highlightedDesc = highlightMatch(escHtml(desc), query);
@@ -1009,10 +956,11 @@ function highlightMatch(html, query) {
 
 function formatEventDate(start, end) {
     if (!start) return '—';
+    const sDate = parseICSDate(start);
+    if (!sDate || isNaN(sDate)) return '—';
     const opts = { day: 'numeric', month: 'long', year: 'numeric' };
     const timeOpts = { hour: '2-digit', minute: '2-digit' };
-    const isAllDay = start.length <= 10;
-    const sDate = new Date(start);
+    const isAllDay = start.length <= 8;
 
     if (isAllDay) {
         return sDate.toLocaleDateString('ru-RU', opts);
@@ -1022,9 +970,11 @@ function formatEventDate(start, end) {
     const startTime = sDate.toLocaleTimeString('ru-RU', timeOpts);
 
     if (end) {
-        const eDate = new Date(end);
-        const endTime = eDate.toLocaleTimeString('ru-RU', timeOpts);
-        return dateStr + ', ' + startTime + ' – ' + endTime;
+        const eDate = parseICSDate(end);
+        if (eDate && !isNaN(eDate)) {
+            const endTime = eDate.toLocaleTimeString('ru-RU', timeOpts);
+            return dateStr + ', ' + startTime + ' – ' + endTime;
+        }
     }
     return dateStr + ', ' + startTime;
 }
@@ -1049,10 +999,6 @@ document.addEventListener('keydown', function(e) {
 
 document.getElementById('searchOverlay').addEventListener('click', function(e) {
     if (e.target === this) closeSearch();
-});
-
-document.getElementById('apiKeyInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') saveApiKey();
 });
 </script>
 
