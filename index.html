@@ -495,12 +495,17 @@
             transition: all var(--transition);
             animation: cardIn .4s cubic-bezier(.22,1,.36,1) both;
             border: 1px solid transparent;
+            cursor: pointer;
         }
 
         .event-card:hover {
             background: var(--primary-light);
             border-color: rgba(21,101,168,.1);
             box-shadow: var(--shadow-sm);
+        }
+
+        .event-card:active {
+            transform: scale(.98);
         }
 
         @keyframes cardIn {
@@ -803,6 +808,19 @@ async function fetchCalendarData() {
     throw new Error('Не удалось загрузить данные календаря. Проверьте подключение к интернету.');
 }
 
+function openEventDate(dateStr) {
+    const d = parseICSDate(dateStr);
+    if (!d) return;
+    const ymd = d.getFullYear() +
+        String(d.getMonth() + 1).padStart(2, '0') +
+        String(d.getDate()).padStart(2, '0');
+    cf.src = base + '&mode=DAY&dates=' + ymd + '%2F' + ymd;
+    closeSearch();
+    ld.classList.remove('gone');
+    st('Переключение…');
+    setTimeout(function() { st('Синхронизировано'); }, 2000);
+}
+
 function openSearch() {
     document.getElementById('searchOverlay').classList.add('open');
     setTimeout(function() { document.getElementById('searchInput').focus(); }, 300);
@@ -850,8 +868,8 @@ async function searchEvents() {
                 const desc = e.description || '';
                 const highlightedDesc = highlightMatch(escHtml(desc), query);
 
-                html += '<div class="event-card" style="animation-delay:' + (i * 0.05) + 's">' +
-                    '<div class="event-title">' + escHtml(e.summary || 'Без названия') + '</div>' +
+                html += '<div class="event-card" onclick="openEventDate(\'' + escHtml(e.start || '') + '\')" style="animation-delay:' + (i * 0.05) + 's">' +
+                    '<div class="event-title">' + escHtml(e.summary || 'Без названия') + ' <span class="material-icons-round" style="font-size:14px;vertical-align:middle;opacity:.4">open_in_new</span></div>' +
                     '<div class="event-meta">' +
                         '<div class="event-meta-item"><span class="material-icons-round">schedule</span>' + dateStr + '</div>' +
                         (loc ? '<div class="event-meta-item"><span class="material-icons-round">place</span>' + escHtml(loc) + '</div>' : '') +
