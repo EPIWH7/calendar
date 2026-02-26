@@ -52,83 +52,44 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-shrink: 0;
-        }
+        .logo { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 
         .cal-icon {
             width: 40px; height: 40px;
             background: linear-gradient(135deg, #4285f4, #1a73e8 60%, #1557b0);
             border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-weight: 700;
-            font-size: 18px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 700; font-size: 18px;
             box-shadow: 0 2px 8px rgba(26,115,232,.35);
-            position: relative;
-            overflow: hidden;
+            position: relative; overflow: hidden;
         }
-
         .cal-icon::before {
-            content: '';
-            position: absolute;
-            inset: 0 0 auto 0;
-            height: 8px;
-            background: rgba(255,255,255,.22);
+            content: ''; position: absolute; inset: 0 0 auto 0;
+            height: 8px; background: rgba(255,255,255,.22);
         }
 
-        .title {
-            font-size: 22px;
-            font-weight: 500;
-            color: var(--g-text);
-            letter-spacing: -.3px;
-        }
-
+        .title { font-size: 22px; font-weight: 500; color: var(--g-text); letter-spacing: -.3px; }
         .spacer { flex: 1; }
 
         .views {
-            display: flex;
-            background: var(--g-bg);
-            border-radius: 20px;
-            padding: 2px;
-            gap: 2px;
+            display: flex; background: var(--g-bg);
+            border-radius: 20px; padding: 2px; gap: 2px;
         }
 
         .vbtn {
-            padding: 6px 16px;
-            border-radius: 18px;
-            border: none;
-            background: transparent;
-            color: var(--g-text-sec);
-            font-family: inherit;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all .2s cubic-bezier(.4,0,.2,1);
+            padding: 6px 16px; border-radius: 18px; border: none;
+            background: transparent; color: var(--g-text-sec);
+            font-family: inherit; font-size: 13px; font-weight: 500;
+            cursor: pointer; transition: all .2s cubic-bezier(.4,0,.2,1);
             white-space: nowrap;
         }
-        .vbtn.on {
-            background: var(--g-surface);
-            color: var(--g-blue);
-            box-shadow: var(--g-shadow-sm);
-        }
+        .vbtn.on { background: var(--g-surface); color: var(--g-blue); box-shadow: var(--g-shadow-sm); }
         .vbtn:hover:not(.on) { background: rgba(0,0,0,.04); }
 
         .ibtn {
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            border: none;
-            background: transparent;
-            color: var(--g-text-sec);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 40px; height: 40px; border-radius: 50%; border: none;
+            background: transparent; color: var(--g-text-sec); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
             transition: background .2s, color .2s;
         }
         .ibtn:hover { background: var(--g-bg); color: var(--g-text); }
@@ -136,28 +97,19 @@
         .actions { display: flex; gap: 4px; }
 
         .status {
-            position: fixed;
-            top: var(--hdr);
-            inset: auto 0 auto 0;
-            height: var(--bar);
-            background: var(--g-surface);
+            position: fixed; top: var(--hdr); inset: auto 0 auto 0;
+            height: var(--bar); background: var(--g-surface);
             border-bottom: 1px solid var(--g-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            z-index: 99;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; z-index: 99;
             animation: fade .5s .15s both;
         }
-
         @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
         .status-left { display: flex; align-items: center; gap: 10px; }
 
         .dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: #34a853;
+            width: 8px; height: 8px; border-radius: 50%; background: #34a853;
             animation: blink 2s infinite;
         }
         @keyframes blink {
@@ -175,18 +127,14 @@
             background: var(--g-surface);
             animation: pop .5s .25s cubic-bezier(.4,0,.2,1) both;
         }
-
         @keyframes pop {
             from { opacity: 0; transform: scale(.985); }
             to { opacity: 1; transform: scale(1); }
         }
 
         .cal-wrap iframe {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            inset: 0;
-            border: none;
+            width: 100%; height: 100%;
+            position: absolute; inset: 0; border: none;
         }
 
         .loader {
@@ -194,12 +142,9 @@
             top: calc(var(--hdr) + var(--bar));
             inset: auto 0 0 0;
             background: var(--g-surface);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            z-index: 50;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 20px; z-index: 50;
             transition: opacity .4s, visibility .4s;
         }
         .loader.gone { opacity: 0; visibility: hidden; pointer-events: none; }
@@ -212,23 +157,46 @@
             animation: spin .8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .loader span { font-size: 14px; color: var(--g-text-sec); }
 
-        .fab {
+        /* Fallback */
+        .fallback {
+            display: none;
             position: fixed;
-            bottom: 24px; right: 24px;
-            width: 56px; height: 56px;
-            border-radius: 16px;
+            top: calc(var(--hdr) + var(--bar));
+            inset: auto 0 0 0;
             background: var(--g-surface);
-            border: none;
-            box-shadow: var(--g-shadow-md);
-            cursor: pointer;
-            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: var(--g-blue);
-            z-index: 200;
+            gap: 16px;
+            z-index: 60;
+            text-align: center;
+            padding: 24px;
+        }
+        .fallback.show { display: flex; }
+        .fallback-icon { font-size: 64px; color: var(--g-border); }
+        .fallback h2 { font-size: 18px; font-weight: 500; color: var(--g-text); }
+        .fallback p { font-size: 14px; color: var(--g-text-sec); max-width: 400px; line-height: 1.5; }
+        .fallback-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 12px 24px; border-radius: 24px;
+            background: var(--g-blue); color: #fff;
+            border: none; font-family: inherit; font-size: 14px;
+            font-weight: 500; cursor: pointer;
+            box-shadow: 0 1px 3px rgba(26,115,232,.4);
+            transition: all .2s;
+            text-decoration: none;
+        }
+        .fallback-btn:hover { background: #1765cc; box-shadow: 0 2px 8px rgba(26,115,232,.5); }
+
+        .fab {
+            position: fixed; bottom: 24px; right: 24px;
+            width: 56px; height: 56px; border-radius: 16px;
+            background: var(--g-surface); border: none;
+            box-shadow: var(--g-shadow-md); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--g-blue); z-index: 200;
             transition: all .25s cubic-bezier(.4,0,.2,1);
             animation: fabPop .5s .6s cubic-bezier(.4,0,.2,1) both;
         }
@@ -240,8 +208,7 @@
         .fab:active { transform: scale(.95); }
 
         .fab-tip {
-            position: fixed;
-            bottom: 88px; right: 24px;
+            position: fixed; bottom: 88px; right: 24px;
             background: var(--g-text); color: #fff;
             padding: 8px 14px; border-radius: 8px;
             font-size: 13px; font-weight: 500;
@@ -309,37 +276,79 @@
     <span>Загрузка календаря…</span>
 </div>
 
-<div class="cal-wrap">
-    <iframe id="cf" src="https://calendar.google.com/calendar/embed?src=ce870856b6537aae62a6ccb685a5cef29039c721e18ba1a211b8af808a7ffc84%40group.calendar.google.com&ctz=Europe%2FMoscow&mode=MONTH&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0&hl=ru" loading="lazy" allow="fullscreen"></iframe>
+<div class="fallback" id="fb">
+    <span class="material-icons-outlined fallback-icon">event_busy</span>
+    <h2>Календарь не загрузился</h2>
+    <p>Хостинг блокирует встраивание Google Calendar. Откройте календарь напрямую:</p>
+    <a class="fallback-btn" href="https://calendar.google.com/calendar/embed?src=ce870856b6537aae62a6ccb685a5cef29039c721e18ba1a211b8af808a7ffc84%40group.calendar.google.com&ctz=Europe%2FMoscow&mode=MONTH&hl=ru" target="_blank">
+        <span class="material-icons-outlined">open_in_new</span>
+        Открыть календарь
+    </a>
 </div>
 
-<button class="fab" onclick="window.open('https://calendar.google.com/calendar/u/0?cid=Y2U4NzA4NTZiNjUzN2FhZTYyYTZjY2I2ODVhNWNlZjI5MDM5YzcyMWUxOGJhMWEyMTFiOGFmODA4YTdmZmM4NEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t','_blank')">
+<div class="cal-wrap">
+    <iframe
+        id="cf"
+        referrerpolicy="no-referrer"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+        allow="fullscreen"
+        loading="eager"
+    ></iframe>
+</div>
+
+<button class="fab" onclick="window.open('https://calendar.google.com/calendar/embed?src=ce870856b6537aae62a6ccb685a5cef29039c721e18ba1a211b8af808a7ffc84%40group.calendar.google.com&ctz=Europe%2FMoscow&mode=MONTH&hl=ru','_blank')">
     <span class="material-icons-outlined">open_in_new</span>
 </button>
 <div class="fab-tip">Открыть в Google Календаре</div>
 
 <script>
+const EMBED = 'https://calendar.google.com/calendar/embed?src=ce870856b6537aae62a6ccb685a5cef29039c721e18ba1a211b8af808a7ffc84%40group.calendar.google.com&ctz=Europe%2FMoscow&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0&hl=ru';
+
 const cf = document.getElementById('cf');
 const ld = document.getElementById('ld');
-const base = 'https://calendar.google.com/calendar/embed?src=ce870856b6537aae62a6ccb685a5cef29039c721e18ba1a211b8af808a7ffc84%40group.calendar.google.com&ctz=Europe%2FMoscow&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0&hl=ru';
+const fb = document.getElementById('fb');
 
 document.getElementById('dayNum').textContent = new Date().getDate();
 
-cf.onload = () => setTimeout(() => ld.classList.add('gone'), 500);
-setTimeout(() => ld.classList.add('gone'), 5000);
+let loaded = false;
+
+cf.onload = function() {
+    loaded = true;
+    setTimeout(() => ld.classList.add('gone'), 400);
+};
+
+cf.onerror = function() {
+    ld.classList.add('gone');
+    fb.classList.add('show');
+};
+
+// Set src after attaching handlers
+cf.src = EMBED + '&mode=MONTH';
+
+// Fallback: if not loaded after 8s, show fallback
+setTimeout(() => {
+    if (!loaded) {
+        ld.classList.add('gone');
+        fb.classList.add('show');
+    }
+}, 8000);
 
 function sw(m, b) {
-    cf.src = base + '&mode=' + m;
+    cf.src = EMBED + '&mode=' + m;
+    loaded = false;
     document.querySelectorAll('.vbtn').forEach(v => v.classList.remove('on'));
     b.classList.add('on');
     ld.classList.remove('gone');
+    fb.classList.remove('show');
     st('Переключение…');
-    setTimeout(() => st('Синхронизировано'), 2000);
+    setTimeout(() => { if (loaded) st('Синхронизировано'); }, 2000);
 }
 
 function reload() {
     const s = cf.src; cf.src = '';
+    loaded = false;
     ld.classList.remove('gone');
+    fb.classList.remove('show');
     st('Обновление…');
     setTimeout(() => { cf.src = s; setTimeout(() => st('Синхронизировано'), 1500); }, 100);
 }
