@@ -78,7 +78,18 @@
             height: 36px;
             width: auto;
             display: block;
-            border-radius: var(--radius-xs);
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        .logo-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
         }
 
         .spacer { flex: 1; }
@@ -560,6 +571,153 @@
         }
 
 
+        /* Event detail modal */
+        .event-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.45);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s ease;
+        }
+
+        .event-modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .event-modal {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-xl);
+            width: 100%;
+            max-width: 520px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateY(20px) scale(.95);
+            transition: transform .35s cubic-bezier(.22,1,.36,1);
+        }
+
+        .event-modal-overlay.open .event-modal {
+            transform: translateY(0) scale(1);
+        }
+
+        .event-modal-header {
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .event-modal-header h2 {
+            flex: 1;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.35;
+            margin: 0;
+        }
+
+        .event-modal-close {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg);
+            color: var(--text-sec);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all var(--transition);
+        }
+
+        .event-modal-close:hover { background: #e2e8f0; color: var(--text); }
+        .event-modal-close .material-icons-round { font-size: 20px; }
+
+        .event-modal-body {
+            padding: 20px 24px 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .event-modal-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .event-modal-row .material-icons-round {
+            font-size: 20px;
+            color: var(--primary);
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .event-modal-row-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .event-modal-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-sec);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 2px;
+        }
+
+        .event-modal-value {
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.6;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        .event-modal-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            align-self: flex-start;
+        }
+
+        .event-modal-btn:hover {
+            box-shadow: 0 4px 16px rgba(21,101,168,.3);
+            transform: translateY(-1px);
+        }
+
+        .event-modal-btn .material-icons-round { font-size: 18px; }
+
+        @media (max-width: 420px) {
+            .event-modal { max-height: 90vh; }
+            .event-modal-header { padding: 16px 18px 12px; }
+            .event-modal-body { padding: 16px 18px 20px; }
+        }
+
         /* Loading spinner in search */
         .search-spinner {
             display: flex;
@@ -582,6 +740,7 @@
             :root { --hdr: 60px; }
             .header { padding: 0 12px; gap: 10px; }
             .logo-img { height: 30px; }
+            .logo-title { font-size: 13px; }
 
             .vbtn { padding: 6px 10px; font-size: 12px; }
             .vbtn-label { display: none; }
@@ -606,6 +765,7 @@
         @media (max-width: 420px) {
             :root { --hdr: 56px; }
             .logo-img { height: 26px; }
+            .logo-title { display: none; }
             .tz { display: none; }
             .ibtn.desk { display: none; }
             .vbtn { padding: 5px 8px; border-radius: 8px; }
@@ -621,6 +781,7 @@
 <header class="header">
     <div class="logo-wrap">
         <img class="logo-img" id="logoImg" src="data:image/jpeg;base64,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" alt="ДКЦ №1">
+        <span class="logo-title">Корпоративный календарь ДКЦ №1</span>
     </div>
 
     <div class="spacer"></div>
@@ -808,13 +969,64 @@ async function fetchCalendarData() {
     throw new Error('Не удалось загрузить данные календаря. Проверьте подключение к интернету.');
 }
 
-function openEventDate(dateStr) {
-    const d = parseICSDate(dateStr);
+let lastSearchResults = [];
+
+function showEventDetail(index) {
+    const e = lastSearchResults[index];
+    if (!e) return;
+
+    document.getElementById('modalTitle').textContent = e.summary || 'Без названия';
+
+    const dateStr = formatEventDate(e.start, e.end);
+    let body = '';
+
+    body += '<div class="event-modal-row">' +
+        '<span class="material-icons-round">schedule</span>' +
+        '<div class="event-modal-row-content">' +
+            '<div class="event-modal-label">Дата и время</div>' +
+            '<div class="event-modal-value">' + escHtml(dateStr) + '</div>' +
+        '</div></div>';
+
+    if (e.location) {
+        body += '<div class="event-modal-row">' +
+            '<span class="material-icons-round">place</span>' +
+            '<div class="event-modal-row-content">' +
+                '<div class="event-modal-label">Место</div>' +
+                '<div class="event-modal-value">' + escHtml(e.location) + '</div>' +
+            '</div></div>';
+    }
+
+    if (e.description) {
+        body += '<div class="event-modal-row">' +
+            '<span class="material-icons-round">description</span>' +
+            '<div class="event-modal-row-content">' +
+                '<div class="event-modal-label">Описание</div>' +
+                '<div class="event-modal-value">' + escHtml(e.description).replace(/\n/g, '<br>') + '</div>' +
+            '</div></div>';
+    }
+
+    body += '<button class="event-modal-btn" onclick="goToEventDate(' + index + ')">' +
+        '<span class="material-icons-round">calendar_today</span>' +
+        'Показать в календаре</button>';
+
+    document.getElementById('modalBody').innerHTML = body;
+    document.getElementById('eventModal').classList.add('open');
+}
+
+function closeEventModal() {
+    document.getElementById('eventModal').classList.remove('open');
+}
+
+function goToEventDate(index) {
+    const e = lastSearchResults[index];
+    if (!e || !e.start) return;
+    const d = parseICSDate(e.start);
     if (!d) return;
     const ymd = d.getFullYear() +
         String(d.getMonth() + 1).padStart(2, '0') +
         String(d.getDate()).padStart(2, '0');
     cf.src = base + '&mode=DAY&dates=' + ymd + '%2F' + ymd;
+    closeEventModal();
     closeSearch();
     ld.classList.remove('gone');
     st('Переключение…');
@@ -861,6 +1073,7 @@ async function searchEvents() {
                     '<p>По запросу «' + escHtml(query) + '» мероприятия не найдены. Проверьте правильность написания ФИО.</p>' +
                 '</div>';
         } else {
+            lastSearchResults = matched;
             let html = '<div class="results-count">Найдено: ' + matched.length + ' ' + pluralize(matched.length) + '</div>';
             matched.forEach(function(e, i) {
                 const dateStr = formatEventDate(e.start, e.end);
@@ -868,8 +1081,8 @@ async function searchEvents() {
                 const desc = e.description || '';
                 const highlightedDesc = highlightMatch(escHtml(desc), query);
 
-                html += '<div class="event-card" onclick="openEventDate(\'' + escHtml(e.start || '') + '\')" style="animation-delay:' + (i * 0.05) + 's">' +
-                    '<div class="event-title">' + escHtml(e.summary || 'Без названия') + ' <span class="material-icons-round" style="font-size:14px;vertical-align:middle;opacity:.4">open_in_new</span></div>' +
+                html += '<div class="event-card" onclick="showEventDetail(' + i + ')" style="animation-delay:' + (i * 0.05) + 's">' +
+                    '<div class="event-title">' + escHtml(e.summary || 'Без названия') + ' <span class="material-icons-round" style="font-size:14px;vertical-align:middle;opacity:.4">info</span></div>' +
                     '<div class="event-meta">' +
                         '<div class="event-meta-item"><span class="material-icons-round">schedule</span>' + dateStr + '</div>' +
                         (loc ? '<div class="event-meta-item"><span class="material-icons-round">place</span>' + escHtml(loc) + '</div>' : '') +
@@ -944,13 +1157,36 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
 });
 
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeSearch();
+    if (e.key === 'Escape') {
+        if (document.getElementById('eventModal').classList.contains('open')) {
+            closeEventModal();
+        } else {
+            closeSearch();
+        }
+    }
 });
 
 document.getElementById('searchOverlay').addEventListener('click', function(e) {
     if (e.target === this) closeSearch();
 });
+
+document.getElementById('eventModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEventModal();
+});
 </script>
+
+<!-- Event Detail Modal -->
+<div class="event-modal-overlay" id="eventModal">
+    <div class="event-modal">
+        <div class="event-modal-header">
+            <h2 id="modalTitle"></h2>
+            <button class="event-modal-close" onclick="closeEventModal()">
+                <span class="material-icons-round">close</span>
+            </button>
+        </div>
+        <div class="event-modal-body" id="modalBody"></div>
+    </div>
+</div>
 
 </body>
 </html>
